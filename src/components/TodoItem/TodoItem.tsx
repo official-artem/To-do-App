@@ -3,10 +3,8 @@ import {
   FC,
   memo,
   useCallback,
-  useContext,
   useState,
 } from 'react';
-import { LoadedUser } from '../../todoContext';
 import { Todo } from '../../types/Todo';
 
 interface Props {
@@ -14,7 +12,9 @@ interface Props {
   onDeleteItem: (todoId: number) => void
   onChangeTodo: (todoId: number, ...params: any) => void
   selectedTodo: number,
-  setSelectedTodo: React.Dispatch<React.SetStateAction<number>>;
+  setSelectedTodo: React.Dispatch<React.SetStateAction<number>>,
+  processingTodoIds: number[],
+  isAddingTodo?: boolean
 }
 
 export const TodoItem: FC<Props> = memo(
@@ -24,8 +24,9 @@ export const TodoItem: FC<Props> = memo(
     onChangeTodo,
     selectedTodo,
     setSelectedTodo,
+    processingTodoIds,
+    isAddingTodo,
   }) => {
-    const isLoadedUser = useContext(LoadedUser);
     const isSelectedTodo = todo.id === selectedTodo;
     const [newTitle, setNewTitle] = useState('');
 
@@ -114,7 +115,7 @@ export const TodoItem: FC<Props> = memo(
           data-cy="TodoLoader"
           // className="modal overlay"
           className={cn('modal overlay', {
-            'is-active': isLoadedUser,
+            'is-active': processingTodoIds.includes(todo.id) || isAddingTodo,
           })}
         >
           <div className="modal-background has-background-white-ter" />

@@ -1,10 +1,13 @@
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useContext } from 'react';
+import { Todo } from '../../types/Todo';
+import { AuthContext } from '../Auth/AuthContext';
 
 export interface Props {
   newTodoField: React.RefObject<HTMLInputElement>;
   title: string,
   setTitle: React.Dispatch<React.SetStateAction<string>>,
-  onAddTodo: () => void
+  onAddTodo: (fieldsForCreate: Omit<Todo, 'id'>) => Promise<void>;
+  showError: (string: string) => void
 }
 
 export const Header: FC<Props> = memo(
@@ -13,11 +16,32 @@ export const Header: FC<Props> = memo(
     title,
     setTitle,
     onAddTodo,
+    showError,
   }) => {
-    const handleAddTodo = (event: React.FormEvent<HTMLFormElement>) => {
+    const user = useContext(AuthContext);
+
+    const handleAddTodo = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      onAddTodo();
+      if (!title) {
+        showError('Title is required');
+
+        return;
+      }
+
+      if (!user) {
+        showError('User not found');
+
+        return;
+      }
+
+      await onAddTodo({
+        title,
+        userId: user.id,
+        completed: false,
+      });
+
+      setTitle('');
     };
 
     return (

@@ -6,10 +6,20 @@ interface Props {
   todos: Todo[] | [];
   onDeleteItem: (todoId: number) => void
   handleChangeTodo: (todoId: number, ...params: any) => void
+  tempNewTodo: Todo | null;
+  processingTodoIds: number[]
+  isAddingTodo: boolean;
 }
 
 export const TodoList: FC<Props> = memo(
-  ({ todos, onDeleteItem, handleChangeTodo }) => {
+  ({
+    todos,
+    onDeleteItem,
+    handleChangeTodo,
+    tempNewTodo,
+    processingTodoIds,
+    isAddingTodo,
+  }) => {
     const [selectedTodo, setSelectedTodo] = useState(0);
 
     return (
@@ -26,8 +36,21 @@ export const TodoList: FC<Props> = memo(
             onChangeTodo={handleChangeTodo}
             selectedTodo={selectedTodo}
             setSelectedTodo={setSelectedTodo}
+            processingTodoIds={processingTodoIds}
           />
         ))}
+
+        {tempNewTodo && (
+          <TodoItem
+            todo={tempNewTodo}
+            isAddingTodo={isAddingTodo}
+            onDeleteItem={onDeleteItem}
+            onChangeTodo={handleChangeTodo}
+            selectedTodo={selectedTodo}
+            setSelectedTodo={setSelectedTodo}
+            processingTodoIds={processingTodoIds}
+          />
+        )}
       </section>
     );
   },
